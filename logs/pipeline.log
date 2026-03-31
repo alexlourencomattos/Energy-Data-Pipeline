@@ -1,0 +1,128 @@
+2026-03-30 12:26:45,824 - INFO - Fetching data from https://dados.ons.org.br/api/energia/geracao
+2026-03-30 12:26:45,898 - ERROR - Error fetching data: HTTPSConnectionPool(host='dados.ons.org.br', port=443): Max retries exceeded with url: /api/energia/geracao (Caused by NameResolutionError("HTTPSConnection(host='dados.ons.org.br', port=443): Failed to resolve 'dados.ons.org.br' ([Errno 11001] getaddrinfo failed)"))
+2026-03-30 12:27:15,892 - INFO - Fetching data from https://dados.ons.org.br/api/energia/geracao
+2026-03-30 12:27:17,062 - ERROR - Error fetching data: 404 Client Error: NOT FOUND for url: https://dados.ons.org.br/api/energia/geracao
+2026-03-30 12:43:27,033 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 12:43:28,412 - INFO - Download successful
+2026-03-30 12:43:28,429 - INFO - Reading Excel file
+2026-03-30 12:43:28,435 - ERROR - Error reading Excel: Missing optional dependency 'openpyxl'.  Use pip or conda to install openpyxl.
+2026-03-30 12:44:49,456 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 12:44:50,310 - INFO - Download successful
+2026-03-30 12:44:50,316 - INFO - Reading Excel file
+2026-03-30 12:44:51,664 - INFO - Excel loaded with 352 rows
+2026-03-30 12:44:51,665 - INFO - Starting transformation
+2026-03-30 12:44:51,666 - INFO - Transformation completed
+2026-03-30 12:44:51,677 - ERROR - Save error: Unable to find a usable engine; tried using: 'pyarrow', 'fastparquet'.
+A suitable version of pyarrow or fastparquet is required for parquet support.
+Trying to import the above resulted in these errors:
+ - Missing optional dependency 'pyarrow'. pyarrow is required for parquet support. Use pip or conda to install pyarrow.
+ - Missing optional dependency 'fastparquet'. fastparquet is required for parquet support. Use pip or conda to install fastparquet.
+2026-03-30 12:45:49,537 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 12:45:50,405 - INFO - Download successful
+2026-03-30 12:45:50,406 - INFO - Reading Excel file
+2026-03-30 12:45:50,850 - INFO - Excel loaded with 352 rows
+2026-03-30 12:45:50,850 - INFO - Starting transformation
+2026-03-30 12:45:50,852 - INFO - Transformation completed
+2026-03-30 12:45:51,206 - INFO - Saved to data/bronze/ena_subsistema_20260330_124550.parquet
+2026-03-30 12:45:51,207 - INFO - Ingestion completed successfully
+2026-03-30 14:51:52,894 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 14:51:57,779 - INFO - Download successful
+2026-03-30 14:51:57,781 - INFO - Reading Excel file
+2026-03-30 14:52:11,212 - INFO - Excel loaded with 352 rows
+2026-03-30 14:52:11,212 - INFO - Starting transformation
+2026-03-30 14:52:12,074 - INFO - Transformation completed
+2026-03-30 15:38:19,717 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:38:19,794 - ERROR - Download error: HTTPSConnectionPool(host='ons-aws-prod-opendata.s3.amazonaws.com', port=443): Max retries exceeded with url: /dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx (Caused by NameResolutionError("HTTPSConnection(host='ons-aws-prod-opendata.s3.amazonaws.com', port=443): Failed to resolve 'ons-aws-prod-opendata.s3.amazonaws.com' ([Errno 11001] getaddrinfo failed)"))
+2026-03-30 15:39:36,133 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:39:38,745 - INFO - Download successful
+2026-03-30 15:39:38,750 - INFO - Reading Excel file
+2026-03-30 15:39:43,711 - INFO - Excel loaded with 352 rows
+2026-03-30 15:39:43,711 - INFO - Starting transformation
+2026-03-30 15:39:43,840 - INFO - Transformation completed
+2026-03-30 15:41:22,518 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:41:23,615 - INFO - Download successful
+2026-03-30 15:41:23,615 - INFO - Reading Excel file
+2026-03-30 15:41:24,244 - INFO - Excel loaded with 352 rows
+2026-03-30 15:41:24,244 - INFO - Starting transformation
+2026-03-30 15:41:24,244 - INFO - Transformation completed
+2026-03-30 15:43:46,216 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:43:47,274 - INFO - Download successful
+2026-03-30 15:43:47,278 - INFO - Reading Excel file
+2026-03-30 15:43:47,905 - INFO - Excel loaded with 352 rows
+2026-03-30 15:43:47,905 - INFO - Starting transformation
+2026-03-30 15:43:47,905 - INFO - Transformation completed
+2026-03-30 15:44:06,965 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:44:07,934 - INFO - Download successful
+2026-03-30 15:44:07,934 - INFO - Reading Excel file
+2026-03-30 15:44:08,364 - INFO - Excel loaded with 352 rows
+2026-03-30 15:44:08,364 - INFO - Starting transformation
+2026-03-30 15:44:08,365 - INFO - Transformation completed
+2026-03-30 15:44:52,209 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:44:53,239 - INFO - Download successful
+2026-03-30 15:44:53,242 - INFO - Reading Excel file
+2026-03-30 15:44:54,083 - INFO - Excel loaded with 352 rows
+2026-03-30 15:47:41,266 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:47:42,363 - INFO - Download successful
+2026-03-30 15:47:42,366 - INFO - Reading Excel file
+2026-03-30 15:47:43,081 - INFO - Excel loaded with 352 rows
+2026-03-30 15:47:43,081 - INFO - Starting transformation
+2026-03-30 15:47:43,081 - INFO - Transformation completed
+2026-03-30 15:49:36,561 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:49:37,936 - INFO - Download successful
+2026-03-30 15:49:37,936 - INFO - Reading Excel file
+2026-03-30 15:49:38,979 - INFO - Excel loaded with 352 rows
+2026-03-30 15:51:59,828 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 15:52:01,229 - INFO - Download successful
+2026-03-30 15:52:01,231 - INFO - Reading Excel file
+2026-03-30 15:52:01,784 - INFO - Excel loaded with 352 rows
+2026-03-30 15:52:01,784 - INFO - Starting transformation
+2026-03-30 15:52:01,971 - INFO - Transformation completed
+2026-03-30 15:52:01,971 - INFO - Starting partitioned save
+2026-03-30 15:52:04,054 - INFO - Partitioned save completed
+2026-03-30 15:52:04,055 - INFO - Ingestion completed successfully
+2026-03-30 15:52:09,001 - INFO - Cleaning data
+2026-03-30 15:52:09,026 - INFO - Silver layer completed
+2026-03-30 21:54:34,255 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 21:54:35,413 - INFO - Download successful
+2026-03-30 21:54:35,413 - INFO - Reading Excel file
+2026-03-30 21:54:39,977 - INFO - Excel loaded with 352 rows
+2026-03-30 21:54:39,977 - INFO - Starting transformation
+2026-03-30 21:54:39,980 - INFO - Transformation completed
+2026-03-30 21:54:39,980 - INFO - Starting partitioned save
+2026-03-30 21:54:44,529 - INFO - Partitioned save completed
+2026-03-30 21:54:44,529 - INFO - Ingestion completed successfully
+2026-03-30 21:54:48,305 - INFO - Cleaning data
+2026-03-30 21:54:48,327 - INFO - Silver layer completed
+2026-03-30 21:58:04,794 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 21:58:05,571 - INFO - Download successful
+2026-03-30 21:58:05,571 - INFO - Reading Excel file
+2026-03-30 21:58:05,871 - INFO - Excel loaded with 352 rows
+2026-03-30 21:58:05,871 - INFO - Starting transformation
+2026-03-30 21:58:05,873 - INFO - Transformation completed
+2026-03-30 21:58:05,873 - INFO - Starting partitioned save
+2026-03-30 21:58:06,231 - INFO - Partitioned save completed
+2026-03-30 21:58:06,231 - INFO - Ingestion completed successfully
+2026-03-30 21:58:06,912 - INFO - Cleaning data
+2026-03-30 21:58:06,918 - INFO - Silver layer completed
+2026-03-30 21:59:05,148 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 21:59:05,832 - INFO - Download successful
+2026-03-30 21:59:05,834 - INFO - Reading Excel file
+2026-03-30 21:59:06,115 - INFO - Excel loaded with 352 rows
+2026-03-30 21:59:06,115 - INFO - Starting transformation
+2026-03-30 21:59:06,117 - INFO - Transformation completed
+2026-03-30 21:59:06,117 - INFO - Starting partitioned save
+2026-03-30 21:59:06,478 - INFO - Partitioned save completed
+2026-03-30 21:59:06,478 - INFO - Ingestion completed successfully
+2026-03-30 21:59:06,903 - INFO - Cleaning data
+2026-03-30 21:59:06,912 - INFO - Silver layer completed
+2026-03-30 22:02:57,398 - INFO - Downloading file from https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx
+2026-03-30 22:02:58,523 - INFO - Download successful
+2026-03-30 22:02:58,526 - INFO - Reading Excel file
+2026-03-30 22:03:02,924 - INFO - Excel loaded with 352 rows
+2026-03-30 22:03:02,924 - INFO - Starting transformation
+2026-03-30 22:03:03,440 - INFO - Transformation completed
+2026-03-30 22:03:03,440 - INFO - Starting partitioned save
+2026-03-30 22:03:04,928 - INFO - Partitioned save completed
+2026-03-30 22:03:04,928 - INFO - Ingestion completed successfully
+2026-03-30 22:03:06,263 - INFO - Cleaning data
+2026-03-30 22:03:06,268 - INFO - Silver layer completed
