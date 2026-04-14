@@ -1,0 +1,84 @@
+# Próximos passos (do código para produção)
+
+Este guia mostra como sair do estado atual e publicar o dashboard com CI/CD.
+
+## 1) Preparar o repositório no GitHub
+
+1. Garanta que o branch principal seja `main`.
+2. Vá em **Settings → Actions → General** e permita workflow read/write.
+3. Vá em **Settings → Actions → Runners** e use `ubuntu-latest` (default).
+
+## 2) Validar localmente
+
+> Recomendado: Python 3.11+
+
+```bash
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+pip install -r requirements.txt
+pytest -q
+python main.py --stage all
+streamlit run app.py
+```
+
+Se o `pytest` falhar por dependências, rode novamente após instalar tudo com `requirements.txt`.
+
+## 3) Rodar via Docker
+
+```bash
+docker compose up --build
+```
+
+A aplicação ficará em: `http://localhost:8501`.
+
+## 4) Ativar CI/CD (GitHub Actions)
+
+O workflow já está em `.github/workflows/ci-cd.yml` e faz:
+- Testes (`pytest -q`)
+- Build de imagem Docker
+- Push para GHCR em push para `main`
+
+### Para push no GHCR
+
+1. Em **Settings → Packages**, habilite publicação de pacotes.
+2. Garanta que o workflow tenha `permissions: packages: write` (já configurado).
+3. Faça merge no `main`.
+
+Imagem esperada:
+
+`ghcr.io/<seu_usuario_ou_org>/energy-data-pipeline:latest`
+
+## 5) Publicar dashboard online
+
+### Opção A — Streamlit Community Cloud
+
+1. Conecte o repositório.
+2. Main file: `app.py`.
+3. Python requirements: `requirements.txt`.
+4. Configure variáveis de ambiente (se usar paths customizados):
+   - `FACT_FILE`
+   - `GOLD_DIR`
+   - `INGESTION_URL` / `INGESTION_YEAR`
+
+### Opção B — Render/Railway/Fly.io (Docker)
+
+1. Configure deploy por Dockerfile.
+2. Porta do serviço: `8501`.
+3. Command (se necessário):
+   `streamlit run app.py --server.address=0.0.0.0 --server.port=8501`
+
+## 6) Operação contínua (recomendado)
+
+- Criar branch protection no `main` exigindo CI verde.
+- Adicionar badge de status do workflow no README.
+- Versionar imagem Docker por tag de release além de `latest`.
+- Configurar monitoramento básico de falhas no app/ingestão.
+
+## 7) Checklist de pronto para produção
+
+- [ ] `pytest -q` passando no GitHub Actions
+- [ ] Build Docker passando no Actions
+- [ ] Imagem publicada no GHCR
+- [ ] Dashboard acessível via URL pública
+- [ ] Dados atualizados com pipeline executado
+

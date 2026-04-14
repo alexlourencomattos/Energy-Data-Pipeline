@@ -1,0 +1,16 @@
+services:
+  dashboard:
+    build: .
+    container_name: energy-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - INGESTION_YEAR=2026
+      - BRONZE_DIR=data/bronze/ena
+      - SILVER_DIR=data/silver
+      - GOLD_DIR=data/gold
+      - ANALYTICS_DIR=data/analytics
+      - FACT_FILE=data/gold/fact_ena.parquet
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs

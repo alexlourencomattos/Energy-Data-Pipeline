@@ -1,73 +1,58 @@
-import streamlit as st
+import os
+from pathlib import Path
+
 import duckdb
 import pandas as pd
 import plotly.express as px
+import streamlit as st
+
+FACT_FILE = Path(os.getenv("FACT_FILE", "data/gold/fact_ena.parquet"))
 
 st.set_page_config(page_title="Energy Data Dashboard", layout="wide")
-
 st.title("⚡ Energy Data Analytics – ENA")
 
-# conexão com DuckDB
+if not FACT_FILE.exists():
+    st.error(
+        "Arquivo fact_ena.parquet não encontrado. Rode o pipeline antes de abrir o dashboard."
+    )
+    st.stop()
+
 con = duckdb.connect()
-
-# carregar dados
-df = con.execute("""
-    SELECT * FROM 'data/gold/fact_ena.parquet'
-""").df()
-
+df = con.execute(f"SELECT * FROM '{FACT_FILE}'").df()
 df["date"] = pd.to_datetime(df["date"])
 
-# filtros
-st.sidebar.header("Filters")
-
+st.sidebar.header("Filtros")
 subsystems = st.sidebar.multiselect(
-    "Select subsystem",
+    "Selecione subsistema",
     options=df["subsystem"].unique(),
-    default=df["subsystem"].unique()
+    default=df["subsystem"].unique(),
 )
 
-df = df[df["subsystem"].isin(subsystems)]
+filtered = df[df["subsystem"].isin(subsystems)].copy()
 
-# gráfico 1: série temporal
-st.subheader("📈 ENA Over Time")
-
+st.subheader("📈 ENA ao longo do tempo")
 fig1 = px.line(
-    df,
+    filtered,
     x="date",
     y="ena_mwmed",
     color="subsystem",
-    title="ENA by Subsystem"
+    title="ENA por subsistema",
 )
-
 st.plotly_chart(fig1, use_container_width=True)
 
-# gráfico 2: média por subsistema
-st.subheader("📊 Average ENA by Subsystem")
-
-df_avg = df.groupby("subsystem")["ena_mwmed"].mean().reset_index()
-
-fig2 = px.bar(
-    df_avg,
-    x="subsystem",
-    y="ena_mwmed",
-    title="Average ENA"
-)
-
+st.subheader("📊 Média ENA por subsistema")
+df_avg = filtered.groupby("subsystem", as_index=False)["ena_mwmed"].mean()
+fig2 = px.bar(df_avg, x="subsystem", y="ena_mwmed", title="Média ENA")
 st.plotly_chart(fig2, use_container_width=True)
 
-# gráfico 3: agregação mensal
-st.subheader("📅 Monthly Trend")
-
-df["year_month"] = df["date"].dt.to_period("M").astype(str)
-
-df_month = df.groupby(["year_month", "subsystem"])["ena_mwmed"].mean().reset_index()
-
+st.subheader("📅 Tendência mensal")
+filtered["year_month"] = filtered["date"].dt.to_period("M").astype(str)
+df_month = filtered.groupby(["year_month", "subsystem"], as_index=False)["ena_mwmed"].mean()
 fig3 = px.line(
     df_month,
     x="year_month",
     y="ena_mwmed",
     color="subsystem",
-    title="Monthly ENA Trend"
+    title="Tendência mensal de ENA",
 )
-
 st.plotly_chart(fig3, use_container_width=True)

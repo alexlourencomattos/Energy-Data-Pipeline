@@ -1,143 +1,104 @@
 # ⚡ Energy Data Platform – End-to-End Data Engineering Project
 
-This project demonstrates a production-oriented data platform designed to ingest, process, model, and analyze large-scale energy data using modern data engineering practices.
+Pipeline de dados com arquitetura **Bronze → Silver → Gold**, analytics em DuckDB e dashboard em Streamlit.
 
-It showcases how raw data can be transformed into reliable, analytics-ready datasets and business insights, following industry standards used in data-driven organizations.
+## 🚀 O que foi melhorado
 
-## 🎯 Objective
+- Parametrização por variáveis de ambiente (ano/URL/caminhos de dados).
+- Ingestão com retry + timeout para maior robustez.
+- Tratamento explícito para bronze vazio.
+- Pipeline com execução por estágio (`--stage`).
+- Pronto para publicação com Docker e CI/CD no GitHub Actions.
 
-Build a complete end-to-end data pipeline that:
+## 🧱 Arquitetura
 
-- Ingests real-world data from the ONS
-- Applies structured transformations and data validation
-- Organizes data using a Data Lake (Medallion Architecture)
-- Models data for analytical consumption (Star Schema)
-- Enables querying and visualization for decision-making
-
-## 🧱 Architecture Overview
-
-``` mermaid
+```mermaid
 flowchart LR
-
-A[Data Sources] --> B[Ingestion Layer]
-B --> C[Raw Data - Bronze]
-C --> D[Processed Data - Silver]
-D --> E[Curated Data - Gold]
-E --> F[Analytics / Dashboard]
-
-D --> M[Hydrology Model - R]
-M --> E
-
-L[Logging] --- B
-T[Tests] --- D
-O[Airflow] -.-> B
-
+A[ONS Open Data] --> B[Ingestion]
+B --> C[Bronze Parquet]
+C --> D[Silver Clean]
+D --> E[Gold Star Schema]
+E --> F[DuckDB Analytics]
+E --> G[Streamlit Dashboard]
 ```
-## 🔄 Data Engineering Workflow
 
-### 1. Data Ingestion (ETL)
-Source: ONS Open Data (Excel via HTTP)
-Technology: Python (Pandas)
-Output: Parquet files (Bronze layer)
+## ⚙️ Requisitos
 
-### 2. Data Storage (Data Lake)
-Format: Parquet
-Architecture:
-Bronze → Raw data (partitioned by date)
-Silver → Cleaned and validated data
-Gold → Curated analytical datasets
-
-### 3. Data Transformation (Silver Layer)
-Data cleaning and normalization
-Type enforcement and validation
-Handling missing and invalid values
-
-### 4. Data Modeling (Gold Layer)
-
-Star Schema:
-fact_ena → energy metrics
-dim_time → temporal attributes
-dim_subsystem → system segmentation
-
-### 5. Analytics (SQL Layer)
-
-Technology: DuckDB
-Queries:
-Aggregations (AVG, GROUP BY)
-Joins (fact + dimensions)
-Window functions (ranking)
-
-### 6. Data Visualization
-Technology: Streamlit + Plotly
-Features:
-Time-series analysis
-Subsystem comparison
-Monthly trends
-
-## ⚙️ Tech Stack
-- Python (Pandas, DuckDB)
-- SQL (analytical queries)
-- Parquet (Data Lake storage)
-- Apache Airflow (orchestration)
-- Docker / Kubernetes (conceptual)
-- Streamlit + Plotly (dashboard)
-- Pytest (unit testing)
-
-## 🛠️ Engineering Best Practices
-
-✔️ Data Lake Partitioning
-- Partitioned by year/month/day
-- Improves performance and scalability
-
-✔️ Logging
-- Structured logs for pipeline execution
-- Error tracking and traceability
-
-✔️ Unit Testing
-- Validates transformations and modeling
-- Ensures reliability and safe refactoring
-
-✔️ Orchestration
-- Airflow DAG controlling pipeline execution
-- Task dependencies and retry logic
-
-## ▶️ How to Run
-1. Install dependencies
 ```bash
-pip install pandas requests pyarrow openpyxl duckdb streamlit plotly pytest
-```
-2. Run the pipeline
-``` bash
-python main.py
+pip install -r requirements.txt
 ```
 
-3. Run tests
+## ▶️ Como executar localmente
+
+### 1) Rodar pipeline completo
+
 ```bash
-pytest
+python main.py --stage all
 ```
-4. Launch dashboard
+
+### 2) Rodar apenas um estágio
+
 ```bash
-streamlit run src/dashboard/app.py
+python main.py --stage ingestion
+python main.py --stage silver
+python main.py --stage modeling
+python main.py --stage analytics
 ```
 
-## 📊 Example Use Cases
-- Monitor energy inflows (ENA) over time
-- Compare subsystem performance
-- Analyze seasonal patterns
-- Support data-driven decision-making
+### 3) Rodar dashboard
 
-## 🎯 Key Highlights
-- End-to-end pipeline (ingestion → analytics)
-- Data Lake with Medallion Architecture
-- Star Schema modeling
-- SQL-based analytics
-- Orchestration with Airflow
-- Data quality and testing
-- Interactive dashboard
+```bash
+streamlit run app.py
+```
 
-## 🚀 Why This Project
+## 🌐 Publicar dashboard online
 
-- Build scalable data pipelines
-- Design analytical data models
-- Ensure data reliability and quality
-- Deliver data products for business use
+### Opção A — Streamlit Community Cloud
+
+1. Suba este repositório no GitHub.
+2. No Streamlit Cloud, crie app apontando para `app.py`.
+3. Configure variáveis de ambiente (se necessário):
+   - `INGESTION_YEAR`
+   - `INGESTION_URL`
+   - `BRONZE_DIR`, `SILVER_DIR`, `GOLD_DIR`, `ANALYTICS_DIR`
+
+### Opção B — Docker (Render/Railway/Fly.io/EC2)
+
+```bash
+docker compose up --build
+```
+
+Isso sobe o dashboard na porta `8501`.
+
+## 🐳 Docker
+
+- `Dockerfile` para build da aplicação.
+- `docker-compose.yml` para execução local rápida.
+
+## 🔁 CI/CD com GitHub Actions
+
+O workflow em `.github/workflows/ci-cd.yml`:
+
+1. Roda testes (`pytest`).
+2. Builda imagem Docker.
+3. Publica no GHCR em pushes para `main` (quando segredo `GITHUB_TOKEN` disponível).
+
+📌 Guia passo a passo pós-setup: `docs/NEXT_STEPS.md`.
+
+## 🧪 Testes
+
+```bash
+pytest -q
+```
+
+## 🌍 Variáveis de ambiente úteis
+
+- `INGESTION_YEAR` (default: ano atual UTC)
+- `INGESTION_URL` (default: ONS para o ano configurado)
+- `BRONZE_DIR` (default: `data/bronze/ena`)
+- `SILVER_DIR` (default: `data/silver`)
+- `SILVER_FILE` (default: `data/silver/ena_clean.parquet`)
+- `GOLD_DIR` (default: `data/gold`)
+- `ANALYTICS_DIR` (default: `data/analytics`)
+- `FACT_FILE` (default: `data/gold/fact_ena.parquet`)
+- `LOG_FILE` (default: `logs/pipeline.log`)
