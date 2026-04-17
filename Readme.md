@@ -1,8 +1,12 @@
 # ⚡ Energy Data Platform – End-to-End Data Engineering Project
 
-This project demonstrates a production-oriented data platform designed to ingest, process, model, and analyze large-scale energy data using modern data engineering practices.
+This project demonstrates a production-oriented data platform 
+designed to ingest, process, model, and analyze large-scale 
+energy data using modern data engineering practices.
 
-It showcases how raw data can be transformed into reliable, analytics-ready datasets and business insights, following industry standards used in data-driven organizations.
+It showcases how raw data can be transformed into reliable, 
+analytics-ready datasets and business insights, 
+following industry standards used in data-driven organizations.
 
 ## 🎯 Objective
 

@@ -75,7 +75,6 @@ def validate_schema(df: pd.DataFrame):
         if col not in df.columns:
             raise ValueError(f"Missing required column: {col}")
 
-
 def save_partitioned_parquet(df: pd.DataFrame, base_path: str):
     try:
         logging.info("Starting partitioned save")
@@ -102,6 +101,7 @@ def save_partitioned_parquet(df: pd.DataFrame, base_path: str):
 
 
 def run_ingestion():
+
         url = "https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx"
 
         file_bytes = download_file(url)
