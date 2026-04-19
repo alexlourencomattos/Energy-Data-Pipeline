@@ -80,8 +80,8 @@ Isso sobe o dashboard na porta `8501`.
 O workflow em `.github/workflows/ci-cd.yml`:
 
 1. Roda testes (`pytest`).
-2. Builda imagem Docker.
-3. Publica no GHCR em push no **branch padrão** do repositório (ex.: `main` ou `master`).
+2. Builda imagem Docker (incluindo em pull request, para validação).
+3. Publica no GHCR somente em push no **branch padrão** do repositório (ex.: `main` ou `master`).
 
 📌 Guia passo a passo pós-setup: `docs/NEXT_STEPS.md`.
 

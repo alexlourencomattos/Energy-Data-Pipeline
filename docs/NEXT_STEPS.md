@@ -35,8 +35,8 @@ A aplicação ficará em: `http://localhost:8501`.
 
 O workflow já está em `.github/workflows/ci-cd.yml` e faz:
 - Testes (`pytest -q`)
-- Build de imagem Docker
-- Push para GHCR em push no branch padrão (`main` ou `master`)
+- Build de imagem Docker (também em pull request)
+- Push para GHCR apenas em push no branch padrão (`main` ou `master`)
 
 ### Para push no GHCR
 
@@ -87,7 +87,7 @@ Imagem esperada:
 Se o workflow já está no ar, faça exatamente nesta ordem:
 
 1. Abra a aba **Actions** e confirme que o último run está ✅ (job `test`).
-2. Se foi push no branch padrão, confirme também ✅ no job `docker`.
+2. Confirme também ✅ no job `docker` (em PR ele builda sem publicar).
 3. Vá em **Packages** e valide a imagem:
    - `ghcr.io/<seu_usuario_ou_org>/energy-data-pipeline:latest`
 4. Faça o deploy em um host:
@@ -102,6 +102,7 @@ Se o workflow já está no ar, faça exatamente nesta ordem:
 ### Troubleshooting rápido (Actions)
 
 - **Falha no `pytest`**: normalmente dependência ausente ou import path; rode localmente `pip install -r requirements.txt && pytest -q`.
+- **Docker não publicou em PR**: esperado. Em PR ele só builda; publish acontece no push do branch padrão.
 - **Falha no push GHCR**: confira permissões `packages: write` e push direto no branch padrão.
 - **Deploy sobe, mas tela vazia**: geralmente `fact_ena.parquet` não gerado; rode `python main.py --stage all` antes.
 
