@@ -1,38 +1,39 @@
-import pandas as pd
 import glob
 import logging
 import os
+from pathlib import Path
 
-def read_bronze_data(path: str) -> pd.DataFrame:
+import pandas as pd
+
+BRONZE_DIR = Path(os.getenv("BRONZE_DIR", "data/bronze/ena"))
+SILVER_DIR = Path(os.getenv("SILVER_DIR", "data/silver"))
+
+
+def read_bronze_data(path: Path) -> pd.DataFrame:
     files = glob.glob(f"{path}/**/*.parquet", recursive=True)
-    df_list = [pd.read_parquet(f) for f in files]
+    if not files:
+        raise FileNotFoundError(f"No parquet files found in bronze path: {path}")
 
+    df_list = [pd.read_parquet(file_path) for file_path in files]
     return pd.concat(df_list, ignore_index=True)
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     logging.info("Cleaning data")
-
-    # remover nulos críticos
-    df = df.dropna(subset=["date", "subsystem", "ena_mwmed"])
-
-    # garantir tipos
-    df["ena_mwmed"] = pd.to_numeric(df["ena_mwmed"], errors="coerce")
-
-    # remover valores inválidos
-    df = df[df["ena_mwmed"] >= 0]
-
-    return df
+    cleaned = df.dropna(subset=["date", "subsystem", "ena_mwmed"]).copy()
+    cleaned["ena_mwmed"] = pd.to_numeric(cleaned["ena_mwmed"], errors="coerce")
+    cleaned = cleaned.dropna(subset=["ena_mwmed"])
+    cleaned = cleaned[cleaned["ena_mwmed"] >= 0]
+    return cleaned
 
 
-def save_silver(df: pd.DataFrame, path: str):
-    os.makedirs(path, exist_ok=True)
-    df.to_parquet(f"{path}/ena_clean.parquet", index=False)
+def save_silver(df: pd.DataFrame, path: Path) -> None:
+    path.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(path / "ena_clean.parquet", index=False)
 
 
-def run_silver():
-    df = read_bronze_data("data/bronze/ena")
+def run_silver() -> None:
+    df = read_bronze_data(BRONZE_DIR)
     df_clean = clean_data(df)
-    save_silver(df_clean, "data/silver")
-
+    save_silver(df_clean, SILVER_DIR)
     logging.info("Silver layer completed")

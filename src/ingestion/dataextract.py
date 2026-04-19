@@ -1,114 +1,123 @@
-import pandas as pd
-import requests
-import os
 import logging
+import os
 from datetime import datetime
 from io import BytesIO
+from pathlib import Path
 
-# Logging
-logging.basicConfig(
-    filename="logs/pipeline.log",
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+import pandas as pd
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+LOG_FILE = Path(os.getenv("LOG_FILE", "logs/pipeline.log"))
+BRONZE_DIR = Path(os.getenv("BRONZE_DIR", "data/bronze/ena"))
+INGESTION_YEAR = os.getenv("INGESTION_YEAR", str(datetime.utcnow().year))
+INGESTION_URL = os.getenv(
+    "INGESTION_URL",
+    f"https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/"
+    f"ENA_DIARIO_SUBSISTEMA_{INGESTION_YEAR}.xlsx",
 )
 
-def download_file(url: str) -> BytesIO:
+LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+logging.basicConfig(
+    filename=str(LOG_FILE),
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+)
+
+
+def _build_session() -> requests.Session:
+    retry = Retry(total=3, backoff_factor=0.8, status_forcelist=[429, 500, 502, 503, 504])
+    adapter = HTTPAdapter(max_retries=retry)
+
+    session = requests.Session()
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
+
+
+def download_file(url: str, timeout: int = 30) -> BytesIO:
     try:
-        logging.info(f"Downloading file from {url}")
-        response = requests.get(url)
-        response.raise_for_status()
+        logging.info("Downloading file from %s", url)
+        with _build_session() as session:
+            response = session.get(url, timeout=timeout)
+            response.raise_for_status()
 
         logging.info("Download successful")
         return BytesIO(response.content)
-
-    except Exception as e:
-        logging.error(f"Download error: {e}")
+    except Exception as exc:
+        logging.error("Download error: %s", exc)
         raise
 
 
 def read_excel(file_bytes: BytesIO) -> pd.DataFrame:
     try:
         logging.info("Reading Excel file")
-
         df = pd.read_excel(file_bytes)
-
-        logging.info(f"Excel loaded with {len(df)} rows")
+        logging.info("Excel loaded with %s rows", len(df))
         return df
-
-    except Exception as e:
-        logging.error(f"Error reading Excel: {e}")
+    except Exception as exc:
+        logging.error("Error reading Excel: %s", exc)
         raise
 
 
 def transform_data(df: pd.DataFrame) -> pd.DataFrame:
     try:
         logging.info("Starting transformation")
-
-        # Padronizar nomes das colunas
+        df = df.copy()
         df.columns = [col.strip().lower() for col in df.columns]
 
-        # Exemplo: renomear colunas comuns
         rename_map = {
             "nom_subsistema": "subsystem",
             "ena_bruta_regiao_mwmed": "ena_mwmed",
-            "ena_data": "date"
+            "ena_data": "date",
         }
-
         df = df.rename(columns=rename_map)
 
-        # Converter datas
         if "date" in df.columns:
-            df["date"] = pd.to_datetime(df["date"])
+            df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
         logging.info("Transformation completed")
         return df
-
-    except Exception as e:
-        logging.error(f"Transformation error: {e}")
+    except Exception as exc:
+        logging.error("Transformation error: %s", exc)
         raise
 
 
-def validate_schema(df: pd.DataFrame):
+def validate_schema(df: pd.DataFrame) -> None:
     required_columns = ["date", "subsystem", "ena_mwmed"]
+    missing_columns = [col for col in required_columns if col not in df.columns]
 
-    for col in required_columns:
-        if col not in df.columns:
-            raise ValueError(f"Missing required column: {col}")
+    if missing_columns:
+        raise ValueError(f"Missing required column(s): {', '.join(missing_columns)}")
 
 
-def save_partitioned_parquet(df: pd.DataFrame, base_path: str):
+def save_partitioned_parquet(df: pd.DataFrame, base_path: Path) -> None:
     try:
         logging.info("Starting partitioned save")
-
-        # Garantir que tem coluna de data
         if "date" not in df.columns:
             raise ValueError("Column 'date' is required for partitioning")
 
-        df["year"] = df["date"].dt.year
-        df["month"] = df["date"].dt.month
-        df["day"] = df["date"].dt.day
+        data = df.copy()
+        data["year"] = data["date"].dt.year
+        data["month"] = data["date"].dt.month
+        data["day"] = data["date"].dt.day
 
-        for (year, month, day), group in df.groupby(["year", "month", "day"]):
-            path = f"{base_path}/year={year}/month={month}/day={day}/data.parquet"
-            os.makedirs(os.path.dirname(path), exist_ok=True)
-
+        for (year, month, day), group in data.groupby(["year", "month", "day"]):
+            path = base_path / f"year={year}" / f"month={month}" / f"day={day}" / "data.parquet"
+            path.parent.mkdir(parents=True, exist_ok=True)
             group.drop(columns=["year", "month", "day"]).to_parquet(path, index=False)
 
         logging.info("Partitioned save completed")
-
-    except Exception as e:
-        logging.error(f"Partitioned save error: {e}")
+    except Exception as exc:
+        logging.error("Partitioned save error: %s", exc)
         raise
 
 
-def run_ingestion():
-        url = "https://ons-aws-prod-opendata.s3.amazonaws.com/dataset/ena_subsistema_di/ENA_DIARIO_SUBSISTEMA_2026.xlsx"
-
-        file_bytes = download_file(url)
-        df_raw = read_excel(file_bytes)
-        df_clean = transform_data(df_raw)
-        validate_schema(df_clean)
-
-        save_partitioned_parquet(df_clean, "data/bronze/ena")
-
-        logging.info("Ingestion completed successfully")
+def run_ingestion() -> None:
+    file_bytes = download_file(INGESTION_URL)
+    df_raw = read_excel(file_bytes)
+    df_clean = transform_data(df_raw)
+    validate_schema(df_clean)
+    save_partitioned_parquet(df_clean, BRONZE_DIR)
+    logging.info("Ingestion completed successfully")
