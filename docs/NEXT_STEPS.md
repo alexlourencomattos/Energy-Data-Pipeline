@@ -82,3 +82,25 @@ Imagem esperada:
 - [ ] Dashboard acessível via URL pública
 - [ ] Dados atualizados com pipeline executado
 
+## 8) “Tá no GitHub com Actions, e agora?”
+
+Se o workflow já está no ar, faça exatamente nesta ordem:
+
+1. Abra a aba **Actions** e confirme que o último run está ✅ (job `test`).
+2. Se foi push na `main`, confirme também ✅ no job `docker`.
+3. Vá em **Packages** e valide a imagem:
+   - `ghcr.io/<seu_usuario_ou_org>/energy-data-pipeline:latest`
+4. Faça o deploy em um host:
+   - **Streamlit Cloud** (mais simples), ou
+   - **Render/Railway/Fly** com imagem do GHCR.
+5. Defina variáveis de ambiente no host (`FACT_FILE`, `GOLD_DIR`, etc.).
+6. Abra a URL pública e valide:
+   - dashboard carrega,
+   - gráficos aparecem,
+   - filtro de subsistema funciona.
+
+### Troubleshooting rápido (Actions)
+
+- **Falha no `pytest`**: normalmente dependência ausente ou import path; rode localmente `pip install -r requirements.txt && pytest -q`.
+- **Falha no push GHCR**: confira permissões `packages: write` e push direto na `main`.
+- **Deploy sobe, mas tela vazia**: geralmente `fact_ena.parquet` não gerado; rode `python main.py --stage all` antes.
