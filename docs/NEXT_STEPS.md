@@ -105,6 +105,7 @@ Se o workflow já está no ar, faça exatamente nesta ordem:
 - **Docker não publicou em PR**: esperado. Em PR ele só builda; publish acontece no push do branch padrão.
 - **Falha no push GHCR**: confira permissões `packages: write` e push direto no branch padrão.
 - **Deploy sobe, mas tela vazia**: geralmente `fact_ena.parquet` não gerado; rode `python main.py --stage all` antes.
+- **`ModuleNotFoundError: duckdb` no Streamlit**: atualize para o último commit e redeploy; o dashboard já foi ajustado para ler parquet com `pandas` sem depender de `duckdb` em runtime.
 
 ## 9) Tela “Choose a registry” no GitHub Packages (normal)
 

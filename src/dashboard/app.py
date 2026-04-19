@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 
-import duckdb
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -17,8 +16,7 @@ if not FACT_FILE.exists():
     )
     st.stop()
 
-con = duckdb.connect()
-df = con.execute(f"SELECT * FROM '{FACT_FILE}'").df()
+df = pd.read_parquet(FACT_FILE)
 df["date"] = pd.to_datetime(df["date"])
 
 st.sidebar.header("Filtros")
