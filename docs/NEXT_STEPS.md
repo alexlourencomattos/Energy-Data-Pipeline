@@ -104,3 +104,22 @@ Se o workflow já está no ar, faça exatamente nesta ordem:
 - **Falha no `pytest`**: normalmente dependência ausente ou import path; rode localmente `pip install -r requirements.txt && pytest -q`.
 - **Falha no push GHCR**: confira permissões `packages: write` e push direto na `main`.
 - **Deploy sobe, mas tela vazia**: geralmente `fact_ena.parquet` não gerado; rode `python main.py --stage all` antes.
+
+## 9) Tela “Choose a registry” no GitHub Packages (normal)
+
+Se você está vendo a página com cards (`npm`, `Containers`, `NuGet` etc.), isso significa apenas que **ainda não existe pacote publicado** na conta/repo.
+
+Para o pacote `Containers` aparecer:
+
+1. Faça um commit/push no branch `main` (o job `docker` só publica em `main`).
+2. Aguarde o workflow terminar com ✅ no job `docker`.
+3. Abra o pacote em:
+   - `https://github.com/<owner>?tab=packages&repo_name=Energy-Data-Pipeline`
+   - ou no repositório: **Packages**.
+4. Verifique se existe a imagem:
+   - `ghcr.io/<owner>/energy-data-pipeline:latest`
+
+Se não aparecer, revise:
+- `Settings → Actions → General` (workflow permissions read/write),
+- permissões de package (`packages: write` no workflow),
+- branch do push (precisa ser `main`).
