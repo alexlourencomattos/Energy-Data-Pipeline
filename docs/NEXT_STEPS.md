@@ -4,7 +4,7 @@ Este guia mostra como sair do estado atual e publicar o dashboard com CI/CD.
 
 ## 1) Preparar o repositório no GitHub
 
-1. Garanta que o branch principal seja `main`.
+1. Garanta qual é o branch padrão do repositório (`main` ou `master`).
 2. Vá em **Settings → Actions → General** e permita workflow read/write.
 3. Vá em **Settings → Actions → Runners** e use `ubuntu-latest` (default).
 
@@ -36,13 +36,13 @@ A aplicação ficará em: `http://localhost:8501`.
 O workflow já está em `.github/workflows/ci-cd.yml` e faz:
 - Testes (`pytest -q`)
 - Build de imagem Docker
-- Push para GHCR em push para `main`
+- Push para GHCR em push no branch padrão (`main` ou `master`)
 
 ### Para push no GHCR
 
 1. Em **Settings → Packages**, habilite publicação de pacotes.
 2. Garanta que o workflow tenha `permissions: packages: write` (já configurado).
-3. Faça merge no `main`.
+3. Faça merge no branch padrão.
 
 Imagem esperada:
 
@@ -69,7 +69,7 @@ Imagem esperada:
 
 ## 6) Operação contínua (recomendado)
 
-- Criar branch protection no `main` exigindo CI verde.
+- Criar branch protection no branch padrão exigindo CI verde.
 - Adicionar badge de status do workflow no README.
 - Versionar imagem Docker por tag de release além de `latest`.
 - Configurar monitoramento básico de falhas no app/ingestão.
@@ -87,7 +87,7 @@ Imagem esperada:
 Se o workflow já está no ar, faça exatamente nesta ordem:
 
 1. Abra a aba **Actions** e confirme que o último run está ✅ (job `test`).
-2. Se foi push na `main`, confirme também ✅ no job `docker`.
+2. Se foi push no branch padrão, confirme também ✅ no job `docker`.
 3. Vá em **Packages** e valide a imagem:
    - `ghcr.io/<seu_usuario_ou_org>/energy-data-pipeline:latest`
 4. Faça o deploy em um host:
@@ -102,7 +102,7 @@ Se o workflow já está no ar, faça exatamente nesta ordem:
 ### Troubleshooting rápido (Actions)
 
 - **Falha no `pytest`**: normalmente dependência ausente ou import path; rode localmente `pip install -r requirements.txt && pytest -q`.
-- **Falha no push GHCR**: confira permissões `packages: write` e push direto na `main`.
+- **Falha no push GHCR**: confira permissões `packages: write` e push direto no branch padrão.
 - **Deploy sobe, mas tela vazia**: geralmente `fact_ena.parquet` não gerado; rode `python main.py --stage all` antes.
 
 ## 9) Tela “Choose a registry” no GitHub Packages (normal)
@@ -111,7 +111,7 @@ Se você está vendo a página com cards (`npm`, `Containers`, `NuGet` etc.), is
 
 Para o pacote `Containers` aparecer:
 
-1. Faça um commit/push no branch `main` (o job `docker` só publica em `main`).
+1. Faça um commit/push no branch padrão (`main` ou `master`).
 2. Aguarde o workflow terminar com ✅ no job `docker`.
 3. Abra o pacote em:
    - `https://github.com/<owner>?tab=packages&repo_name=Energy-Data-Pipeline`
@@ -122,4 +122,4 @@ Para o pacote `Containers` aparecer:
 Se não aparecer, revise:
 - `Settings → Actions → General` (workflow permissions read/write),
 - permissões de package (`packages: write` no workflow),
-- branch do push (precisa ser `main`).
+- branch do push (precisa ser o branch padrão).
